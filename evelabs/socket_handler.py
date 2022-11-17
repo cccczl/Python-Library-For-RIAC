@@ -37,11 +37,13 @@ class SocketHandler(threading.Thread):
     def on_open(ws):
       self.ready = True;
 
-    self.ws = websocket.WebSocketApp('ws://%s:8899/websocket' % host,
-      on_message = on_message,
-      on_error = on_error,
-      on_close = on_close,
-      on_open = on_open)
+    self.ws = websocket.WebSocketApp(
+        f'ws://{host}:8899/websocket',
+        on_message=on_message,
+        on_error=on_error,
+        on_close=on_close,
+        on_open=on_open,
+    )
 
     #Override
     def run_ws():
@@ -64,9 +66,9 @@ class SocketHandler(threading.Thread):
         if msg is self._sentinel:
           self.ws.close()
           break
-      
+
         if self.debug: 
-          print("Tx: " + json.dumps(msg))
+          print(f"Tx: {json.dumps(msg)}")
         msg_to_send = json.dumps(msg) + "\r\n"
         # Send the message
         self.ws.send(msg_to_send)

@@ -63,26 +63,24 @@ class evelabs:
     print(devices)
     if interactive:
       choice = self.connectMenu(devices['devices'])
-      print("Connecting to: %s" % devices['devices'][int(choice)-1]['name'])
+      print(f"Connecting to: {devices['devices'][int(choice) - 1]['name']}")
       self.connect(devices['devices'][int(choice)-1]['address'])
-    else:
-      if id:
-        filtered = [item for item in devices['devices'] if item['name'] == id]
-        if len(filtered) == 0:
-          raise Exception("No evelabss found with id: %s" % id)
-        elif len(filtered) == 1:
-          # Connect to the only device we've found
-          self.connect(filtered[0]['address'])
-        else:
-          raise Exception("Multiple evelabss found with id: %s" % id)
+    elif id:
+      filtered = [item for item in devices['devices'] if item['name'] == id]
+      if not filtered:
+        raise Exception(f"No evelabss found with id: {id}")
+      elif len(filtered) == 1:
+        # Connect to the only device we've found
+        self.connect(filtered[0]['address'])
       else:
-        if len(devices['devices']) == 0:
-          raise Exception("No evelabss found")
-        elif len(devices['devices']) == 1:
-          # Connect to the only device we've found
-          self.connect(devices['devices'][0]['address'])
-        else:
-          raise Exception("Too many evelabss found to auto connect without specifying an ID")
+        raise Exception(f"Multiple evelabss found with id: {id}")
+    elif len(devices['devices']) == 0:
+      raise Exception("No evelabss found")
+    elif len(devices['devices']) == 1:
+      # Connect to the only device we've found
+      self.connect(devices['devices'][0]['address'])
+    else:
+      raise Exception("Too many evelabss found to auto connect without specifying an ID")
 
   def errorNotify(self, on_error):
     self.__on_error = on_error
@@ -185,16 +183,16 @@ class evelabs:
           if (rx_id == 'follow'):
             self.__follow(incoming)
             continue
-          raise IOError("Received message ID (%s) does not match expected (%s)" % (rx_id, msg_id))
+          raise IOError(
+              f"Received message ID ({rx_id}) does not match expected ({msg_id})"
+          )
         rx_status = incoming.get('status','???')
         if rx_status == 'accepted':
           accepted = True
         elif rx_status == 'complete':
           return incoming.get('msg',None)
-        elif rx_status == 'notify':
-          pass
-        else:
-          raise IOError("Received message status (%s) unexpected" % (rx_status,))
+        elif rx_status != 'notify':
+          raise IOError(f"Received message status ({rx_status}) unexpected")
       finally:
         self.recv_q.task_done()
 

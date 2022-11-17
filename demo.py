@@ -14,11 +14,7 @@ def on_error(x, msg, timeout, bot):
   evelabs.disconnect()
 
 # choose the evelabs to connect to
-if len(sys.argv) > 1:
-  host = sys.argv[1]
-else:
-  host = '192.168.4.1'
-
+host = sys.argv[1] if len(sys.argv) > 1 else '192.168.4.1'
 # connect to evelabs - there are a few different ways of doing this
 
 # Use the host we specified on the command line
@@ -30,7 +26,7 @@ evelabs = evelabs(host, debug=True)
 # Specify the id of the evelabs we want to connect to
 #evelabs.autoConnect(id='evelabs-abcd')
 
-print("evelabs version: %s" % evelabs.version)
+print(f"evelabs version: {evelabs.version}")
 
 # set up error handling
 evelabs.errorNotify(on_error)
